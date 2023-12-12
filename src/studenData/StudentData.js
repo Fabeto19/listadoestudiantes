@@ -5,6 +5,7 @@ import axios from 'axios';
 const StudentData = () => {
   const [studentInfo, setStudentInfo] = useState(null);
   const [selectedWeek, setSelectedWeek] = useState(1);
+  const [selectedStudent, setSelectedStudent] = useState(null);
 
   useEffect(() => {
     // Realizar solicitud para obtener datos del estudiante desde la API
@@ -19,16 +20,54 @@ const StudentData = () => {
     setSelectedWeek(week);
   };
 
+
+  const handleSaveAttendance = () => {
+    // Mapear los datos a la estructura que espera tu API
+    const dataToSend = studentInfo.map(student => ({
+      nombre: student.nombre,
+      curso: student.curso,
+      correo: student.correo,
+      wasap: student.wasap,
+      _id: student._id,
+      [`sem${selectedWeek}`]: student[`sem${selectedWeek}`],
+    }));
+  
+    // Realizar solicitud POST para guardar los datos actualizados en la API
+    axios.post('https://girapi.bladimirchipana.repl.co/alumnos', dataToSend)
+      .then(response => console.log('Attendance data saved:', response.data))
+      .catch(error => console.error('Error saving attendance data:', error));
+  };
+ 
+
+  const handleStudentClick = (student) => {
+    setSelectedStudent(student);
+  };
+
+  const handleCheckboxChange = (studentIndex, attended) => {
+    const updatedStudentInfo = [...studentInfo];
+  
+    if (attended) {
+      updatedStudentInfo[studentIndex][`sem${selectedWeek}`] = 1;
+    } else {
+      // Si el checkbox no está marcado, desmarcarlo (valor 0)
+      updatedStudentInfo[studentIndex][`sem${selectedWeek}`] = 0;
+    }
+  
+    console.log('Updated Student Info:', updatedStudentInfo);
+    setStudentInfo(updatedStudentInfo);
+  };
+  
+  
+
   return (
     <div>
       <h2>Datos del Estudiante</h2>
-      {studentInfo && studentInfo.length > 0 && (
+      {selectedStudent && (
         <div>
-          {/* Mostrar información del primer estudiante en la lista */}
-          <p>Nombre: {studentInfo[0].nombre}</p>
-          <p>Curso: {studentInfo[0].curso}</p>
-          <p>Correo: {studentInfo[0].correo}</p>
-          <p>Número de Whatsapp: {studentInfo[0].wasap}</p>
+          <p>Nombre: {selectedStudent.nombre}</p>
+          <p>Curso: {selectedStudent.curso}</p>
+          <p>Correo: {selectedStudent.correo}</p>
+          <p>Número de Whatsapp: {selectedStudent.wasap}</p>
         </div>
       )}
 
@@ -51,25 +90,35 @@ const StudentData = () => {
           <table>
             <thead>
               <tr>
-                <th>Día</th>
+                <th>Nombre</th>
                 <th>Asistió</th>
                 <th>No asistió</th>
               </tr>
             </thead>
             <tbody>
-              {['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'].map((day, index) => (
+              {studentInfo.map((student, index) => (
                 <tr key={index}>
-                  <td>{day}</td>
+                  <td onClick={() => handleStudentClick(student)}>{student.nombre}</td>
                   <td>
-                    <input type="checkbox" checked={studentInfo[0][`sem${selectedWeek}`] === 1} disabled={true} />
+                    <input
+                      type="checkbox"
+                      checked={student[`sem${selectedWeek}`] === 1}
+                      onChange={() => handleCheckboxChange(index, true)}
+                    />
                   </td>
                   <td>
-                    <input type="checkbox" checked={studentInfo[0][`sem${selectedWeek}`] === 0} disabled={true} />
+                    <input
+                      type="checkbox"
+                      checked={student[`sem${selectedWeek}`] === 0}
+                      onChange={() => handleCheckboxChange(index, false)}
+                    />
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+
+          <button onClick={handleSaveAttendance}>Guardar Asistencias</button>
         </div>
       )}
     </div>
