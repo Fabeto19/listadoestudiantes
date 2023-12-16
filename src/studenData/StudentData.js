@@ -22,21 +22,23 @@ const StudentData = () => {
 
 
   const handleSaveAttendance = () => {
-    // Mapear los datos a la estructura que espera tu API
-    const dataToSend = studentInfo.map(student => ({
-      nombre: student.nombre,
-      curso: student.curso,
-      correo: student.correo,
-      wasap: student.wasap,
-      _id: student._id,
-      [`sem${selectedWeek}`]: student[`sem${selectedWeek}`],
-    }));
+    // Filtrar estudiantes que han marcado asistencia para la semana seleccionada
+    const studentsWithAttendance = studentInfo.filter(student => student[`sem${selectedWeek}`] !== undefined);
   
-    // Realizar solicitud POST para guardar los datos actualizados en la API
-    axios.post('https://girapi.bladimirchipana.repl.co/alumnos', dataToSend)
+    // Crear el objeto que se enviará a la API
+    const dataToSend = {
+      _idUsuario: "6531d08612ec096c58717b97",
+      _idRiesgo: "65754cdbd6a61db3295d8f3b",
+      alumnoId: studentsWithAttendance.map(student => student._id),
+      [`sem${selectedWeek}`]: studentsWithAttendance.map(student => student[`sem${selectedWeek}`]),
+    };
+  
+    axios.post('https://girapi.bladimirchipana.repl.co/listalumno', dataToSend)
       .then(response => console.log('Attendance data saved:', response.data))
       .catch(error => console.error('Error saving attendance data:', error));
   };
+  
+  
  
 
   const handleStudentClick = (student) => {
