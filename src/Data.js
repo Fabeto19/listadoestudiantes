@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const URLdesrrollo = "https://girapi.bladimirchipana.repl.co/listalumno"
-const alumnos = 'https://girapi.bladimirchipana.repl.co/alumnos?_idUsuario=6531d08612ec096c58717b97&_idRiesgo=65754cdbd6a61db3295d8f3b'
+const alumnos = 'https://girapi.bladimirchipana.repl.co/alumnos?_idUsuario=6531d08612ec096c58717b97&_idRiesgo=657f1edfb8453f2c73ddf88c'
 
 
 export const getAlumnos = async (xset) => {
@@ -21,7 +21,7 @@ export const postLista = async (alumnoId ,numero, valor) => {
         const semana = "sem";
         const data = {
             _idUsuario: "6531d08612ec096c58717b97",
-            _idRiesgo: "65754cdbd6a61db3295d8f3b",
+            _idRiesgo: "657f1edfb8453f2c73ddf88c",
             alumnoId,
         };
 
